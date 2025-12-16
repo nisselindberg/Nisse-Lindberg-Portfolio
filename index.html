@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nisse Lindberg | Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class', // Enables manual toggling of dark mode
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['ui-sans-serif', 'system-ui', 'sans-serif'],
+              lexend: ['Lexend', 'sans-serif'],
+              roboto: ['Roboto', 'sans-serif'],
+            },
+            colors: {
+              brand: {
+                50: '#faf5ff',  // Purple 50
+                100: '#f3e8ff', // Purple 100
+                500: '#a855f7', // Purple 500
+                600: '#9333ea', // Purple 600
+                900: '#581c87', // Purple 900
+              }
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      /* Custom Scrollbar for a premium feel */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f4f4f5; /* Zinc-100 */
+      }
+      .dark ::-webkit-scrollbar-track {
+        background: #09090b; /* Zinc-950 */
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #a1a1aa; /* Zinc-400 */
+        border-radius: 4px;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #3f3f46; /* Zinc-700 */
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #71717a; /* Zinc-500 */
+      }
+      html, body {
+        overflow-x: hidden;
+        width: 100%;
+        overscroll-behavior-y: none; /* Prevents bounce effects that can look like stuck scroll on some OS */
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.25",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.10.1",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+    <div id="root"></div>
+  </body>
+</html>
