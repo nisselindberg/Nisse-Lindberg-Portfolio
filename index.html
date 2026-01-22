@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="dark">
   <head>
@@ -63,16 +64,18 @@
         font-family: 'Outfit', sans-serif;
       }
     </style>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.25",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.10.1",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-    "react": "https://aistudiocdn.com/react@^19.2.1",
-    "react/": "https://aistudiocdn.com/react@^19.2.1/",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "framer-motion": "https://esm.sh/framer-motion@^12.29.0"
   }
 }
 </script>
@@ -80,6 +83,7 @@
   <body class="text-zinc-100">
     <div class="noise-overlay"></div>
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
+    <!-- Vite förväntar sig en absolut sökväg till entrypointen i rotmappen -->
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

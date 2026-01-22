@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation, Link } from 'react-router-dom';
 import Home from './components/Home';
@@ -31,14 +32,14 @@ const Navigation = () => {
     <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 flex items-center justify-between px-6 md:px-12 py-8 ${isScrolled ? 'backdrop-blur-3xl bg-black/40 py-4 border-b border-white/10' : ''}`}>
       <Link to="/" className="flex items-center gap-6 group">
         <div className="relative">
-          {/* Increased height from h-8/md:h-10 to h-12/md:h-16 for better visibility */}
+          {/* Vidare förstoring av loggan för maximal läsbarhet: h-16 md:h-24 */}
           <img 
             src={profile.logo} 
             alt="Logo" 
-            className="h-12 md:h-16 w-auto invert brightness-200 transition-transform duration-500 group-hover:scale-105" 
+            className="h-16 md:h-24 w-auto invert brightness-200 transition-transform duration-500 group-hover:scale-105" 
           />
         </div>
-        <span className="text-[10px] font-bold tracking-[0.5em] uppercase opacity-40 group-hover:opacity-100 transition-all hidden md:block text-white font-outfit">
+        <span className="text-[12px] font-bold tracking-[0.5em] uppercase opacity-40 group-hover:opacity-100 transition-all hidden md:block text-white font-outfit">
           {profile.name}
         </span>
       </Link>
