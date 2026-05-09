@@ -1,32 +1,25 @@
-import React, { useState, useRef, useEffect } from "react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { X, Send, Loader2, Sparkles, Globe } from "lucide-react";
-import { ChatMessage } from "../types";
-import { useLanguage } from "../contexts/LanguageContext";
+import React, { useState, useRef, useEffect } from 'react';
+import { GoogleGenAI } from "@google/genai";
+import { X, Send, Loader2, Sparkles, Globe } from 'lucide-react';
+import { ChatMessage } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const AIAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   // We now use the global language context instead of local state for language selection
   const { language, toggleLanguage, projects, profile } = useLanguage();
-
+  
   // Initial message depends on language
-  const getInitMessage = (lang: "sv" | "en") => ({
-    id: "init",
-    role: "model" as const,
-    text:
-      lang === "sv"
-        ? `Hej! Jag är ${
-            profile.name.split(" ")[0]
-          }s AI-assistent. Fråga mig gärna om mina projekt, min designprocess eller mina färdigheter!`
-        : `Hi! I'm ${
-            profile.name.split(" ")[0]
-          }'s AI assistant. Feel free to ask me about my projects, design process, or skills!`,
+  const getInitMessage = (lang: 'sv' | 'en') => ({
+    id: 'init', 
+    role: 'model' as const, 
+    text: lang === 'sv' 
+      ? `Hej! Jag är ${profile.name.split(' ')[0]}s AI-assistent. Fråga mig gärna om mina projekt, min designprocess eller mina färdigheter!`
+      : `Hi! I'm ${profile.name.split(' ')[0]}'s AI assistant. Feel free to ask me about my projects, design process, or skills!`
   });
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    getInitMessage(language),
-  ]);
-  const [inputValue, setInputValue] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([getInitMessage(language)]);
+  const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +27,7 @@ const AIAssistant: React.FC = () => {
   useEffect(() => {
     // If we only have the init message (or none), reset it when language changes
     if (messages.length <= 1) {
-      setMessages([getInitMessage(language)]);
+        setMessages([getInitMessage(language)]);
     }
   }, [language]);
 
@@ -46,29 +39,31 @@ const AIAssistant: React.FC = () => {
     scrollToBottom();
   }, [messages, isOpen]);
 
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
+
   const handleSend = async () => {
-    // Vite använder `import.meta.env` för miljövariabler, och de måste börja med VITE_
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!inputValue.trim() || !apiKey) {
-      console.error(
-        "API-nyckel för Gemini är inte konfigurerad. Skapa en .env-fil med VITE_GEMINI_API_KEY."
-      );
+    if (!inputValue.trim()) return;
+
+    if (!apiKey?.trim()) {
+      const err =
+        language === 'sv'
+          ? 'Api-nyckel saknas. Lägg VITE_GEMINI_API_KEY i .env eller .env.local.'
+          : 'API key missing. Set VITE_GEMINI_API_KEY in .env or .env.local.';
+      setMessages((prev) => [...prev, { id: Date.now().toString(), role: 'model', text: err }]);
       return;
     }
 
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: "user",
-      text: inputValue,
-    };
+    const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', text: inputValue };
     setMessages((prev) => [...prev, userMsg]);
-    setInputValue("");
+    setInputValue('');
     setIsLoading(true);
 
     try {
-      // Systeminstruktion för AI-assistenten
-      const langContext =
-        language === "sv" ? "Svara på Svenska." : "Answer in English.";
+      const ai = new GoogleGenAI({ apiKey });
+      
+      const langContext = language === 'sv' 
+        ? "Svara på Svenska." 
+        : "Answer in English.";
 
       // Construct system context from portfolio data
       const context = `
@@ -82,53 +77,43 @@ const AIAssistant: React.FC = () => {
         Projects Data:
         ${JSON.stringify(projects)}
 
-        Your goal is to answer questions about ${
-          profile.name
-        }'s work, skills, and specific projects professionally and enthusiastically.
+        Your goal is to answer questions about ${profile.name}'s work, skills, and specific projects professionally and enthusiastically.
         Keep answers concise (under 100 words) unless asked for details.
-        If asked for contact info, refer to the contact section or ${
-          profile.email
-        }.
+        If asked for contact info, refer to the contact section or ${profile.email}.
         Act as an extension of Nisse himself - friendly and helpful.
       `;
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({
-        model: "gemini-pro",
-        systemInstruction: context,
+      const chat = ai.chats.create({
+        model: 'gemini-2.5-flash',
+        config: {
+          systemInstruction: context,
+        },
       });
-
-      const result = await model.generateContentStream(userMsg.text);
-
-      let fullText = "";
+      
+      const result = await chat.sendMessageStream({ message: userMsg.text });
+      
+      let fullText = '';
       const modelMsgId = (Date.now() + 1).toString();
-
+      
       // Add placeholder for stream
-      setMessages((prev) => [
-        ...prev,
-        { id: modelMsgId, role: "model", text: "" },
-      ]);
-      for await (const chunk of result.stream) {
-        const text = chunk.text();
-        if (text !== undefined) {
+      setMessages(prev => [...prev, { id: modelMsgId, role: 'model', text: '' }]);
+
+      for await (const chunk of result) {
+        const text = chunk.text;
+        if (text) {
           fullText += text;
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === modelMsgId ? { ...m, text: fullText } : m
-            )
+          setMessages(prev => 
+            prev.map(m => m.id === modelMsgId ? { ...m, text: fullText } : m)
           );
         }
       }
+      
     } catch (error) {
       console.error("Gemini Error:", error);
-      const errorMsg =
-        language === "sv"
-          ? "Jag har lite problem att koppla upp mig just nu. Försök igen om en liten stund."
-          : "I'm having trouble connecting right now. Please try again in a moment.";
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now().toString(), role: "model", text: errorMsg },
-      ]);
+      const errorMsg = language === 'sv' 
+        ? "Jag har lite problem att koppla upp mig just nu. Försök igen om en liten stund."
+        : "I'm having trouble connecting right now. Please try again in a moment.";
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'model', text: errorMsg }]);
     } finally {
       setIsLoading(false);
     }
@@ -140,23 +125,17 @@ const AIAssistant: React.FC = () => {
       <button
         onClick={() => setIsOpen(true)}
         className={`fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-xl transition-all duration-300 ${
-          isOpen
-            ? "scale-0 opacity-0"
-            : "scale-100 opacity-100 bg-brand-600 text-white hover:bg-brand-500"
+          isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100 bg-brand-600 text-white hover:bg-brand-500'
         }`}
       >
         <Sparkles size={24} />
       </button>
 
       {/* Chat Window */}
-      <div
-        className={`fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col transition-all duration-300 origin-bottom-right ${
-          isOpen
-            ? "scale-100 opacity-100 translate-y-0"
-            : "scale-90 opacity-0 translate-y-10 pointer-events-none"
-        }`}
-        style={{ height: "500px" }}
-      >
+      <div className={`fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col transition-all duration-300 origin-bottom-right ${
+        isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'
+      }`} style={{ height: '500px' }}>
+        
         {/* Header */}
         <div className="p-4 bg-brand-600 rounded-t-2xl flex justify-between items-center text-white">
           <div className="flex items-center gap-2">
@@ -164,17 +143,14 @@ const AIAssistant: React.FC = () => {
             <span className="font-medium">AI Assistant</span>
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <button 
               onClick={toggleLanguage}
               className="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded-md transition-colors flex items-center gap-1"
               title="Switch Language"
             >
               <Globe size={12} /> {language.toUpperCase()}
             </button>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="hover:bg-white/20 p-1 rounded-full"
-            >
+            <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1 rounded-full">
               <X size={18} />
             </button>
           </div>
@@ -185,15 +161,13 @@ const AIAssistant: React.FC = () => {
           {messages.map((msg) => (
             <div
               key={msg.id}
-              className={`flex ${
-                msg.role === "user" ? "justify-end" : "justify-start"
-              }`}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${
-                  msg.role === "user"
-                    ? "bg-brand-600 text-white rounded-tr-none"
-                    : "bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 shadow-sm border border-zinc-100 dark:border-zinc-700 rounded-tl-none"
+                  msg.role === 'user'
+                    ? 'bg-brand-600 text-white rounded-tr-none'
+                    : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 shadow-sm border border-zinc-100 dark:border-zinc-700 rounded-tl-none'
                 }`}
               >
                 {msg.text}
@@ -217,14 +191,12 @@ const AIAssistant: React.FC = () => {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder={
-                language === "sv" ? "Ställ en fråga..." : "Ask a question..."
-              }
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder={language === 'sv' ? "Ställ en fråga..." : "Ask a question..."}
               className="flex-1 bg-transparent outline-none text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
               disabled={isLoading}
             />
-            <button
+            <button 
               onClick={handleSend}
               disabled={isLoading || !inputValue.trim()}
               className="text-brand-600 dark:text-brand-400 disabled:text-zinc-300 dark:disabled:text-zinc-600 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"

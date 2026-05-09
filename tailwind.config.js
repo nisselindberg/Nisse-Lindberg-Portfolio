@@ -2,31 +2,27 @@
 export default {
   content: [
     "./index.html",
-    "./*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./contexts/**/*.{js,ts,jsx,tsx}",
+    "./**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: "class",
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Miranda", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: [
-          "Bricolage Grotesque",
-          "ui-sans-serif",
-          "system-ui",
-          "sans-serif",
-        ],
-        lexend: ["Lexend", "sans-serif"],
-        roboto: ["Roboto", "sans-serif"],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        outfit: ['Outfit', 'sans-serif'],
+        bricolage: ['"Bricolage Grotesque"', 'sans-serif'],
       },
       colors: {
         brand: {
-          500: "#a855f7", // Purple 500
-          600: "#9333ea", // Purple 600
-        },
-      },
+          50: '#ecfeff',
+          100: '#cffafe',
+          400: '#22d3ee',
+          500: '#06b6d4',
+          600: '#0891b2',
+          900: '#164e63',
+        }
+      }
     },
   },
   plugins: [],
-};
+}

@@ -5,6 +5,7 @@ Vite + React + TypeScript. Kör lokalt eller bygg för produktion.
 ## Krav
 
 - **Node.js 20** (eller nyare), se `engines` i `package.json`
+- Studio-referens: [AI Studio](https://ai.studio/apps/7f1a0406-fc19-48f3-99b7-7872e944e6df) (mall du utgick från)
 
 ## Kom igång (lokalt)
 
