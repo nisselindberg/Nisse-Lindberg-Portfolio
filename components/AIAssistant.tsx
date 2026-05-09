@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { MessageCircle, X, Send, Loader2, Sparkles, Globe } from "lucide-react";
+import { X, Send, Loader2, Sparkles, Globe } from "lucide-react";
 import { ChatMessage } from "../types";
 import { useLanguage } from "../contexts/LanguageContext";
 

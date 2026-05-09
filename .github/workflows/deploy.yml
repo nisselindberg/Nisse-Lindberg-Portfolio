@@ -28,12 +28,12 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build
         env:
-          # Om du vill att AI:n ska funka på GitHub, lägg till din nyckel i Repo Settings > Secrets
+          # Om du vill att AI:n ska funka på GitHub Pages, lägg till reposecret VITE_GEMINI_API_KEY
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
 
       - name: Upload artifact

@@ -10,7 +10,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Miranda", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: [
+          "Bricolage Grotesque",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+        ],
         lexend: ["Lexend", "sans-serif"],
         roboto: ["Roboto", "sans-serif"],
       },
